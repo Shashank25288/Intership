@@ -1,0 +1,146 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+
+header {
+    background: #333;
+    padding: 1rem;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: background 0.3s;
+}
+
+nav a:hover {
+    background: #555;
+}
+
+
+#hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(to bottom, #333, #555);
+    color: #fff;
+    padding-top: 80px; 
+
+}
+.btn {
+    background: #ff6b6b;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #ec1a1a;
+}
+
+
+section {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+
+.profile-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 2%;
+    margin: 1rem auto;
+    display: block;
+}
+
+
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    list-style: none;
+}
+
+.skills-list li {
+    background: #333;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    border-radius: 20px;
+}
+
+
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+input, textarea {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+textarea {
+    height: 100px;
+}
+
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    background: #333;
+    color: #fff;
+}
+
+
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+    }
+    
+    #hero {
+        padding: 2rem;
+    }
+    
+    section {
+        padding: 2rem 1rem;
+    }
+}

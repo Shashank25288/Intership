@@ -1,13 +1,411 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>demo-app</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shashank HS - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        /* Animation Keyframes */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(5deg); }
+        }
+
+        @keyframes scale {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Apply animations */
+        .bounce {
+            animation: bounce 2s ease-in-out;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .rotate:hover {
+            animation: rotate 0.5s ease-in-out;
+        }
+
+        .scale {
+            animation: scale 1s ease-out;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display:flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        nav h1 {
+            color: #007bff;
+            font-size: 1.5em;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #007bff;
+        }
+
+        /* Hero Section */
+        #hero {
+            background: linear-gradient(135deg, #2e03ee, #3708e2);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin-bottom: 20px;
+        }
+
+        #hero h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            animation: bounce 2s ease-in-out;
+        }
+
+        #hero p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: white;
+            color: #007bff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 700;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Sections */
+        section {
+            padding: 60px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 30px;
+            font-size: 2em;
+            animation: bounce 2s ease-in-out;
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .skill-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .skill-item i {
+            font-size: 2em;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        /* Education */
+        .education-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: scale 1s ease-out;
+        }
+        .resume-link{
+            display:inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        /* Projects */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            animation: scale 1s ease-out;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            animation: rotate 0.5s ease-in-out;
+        }
+
+        .project-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .project-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact */
+        .contact-info {
+            text-align: center;
+            animation: scale 1s ease-out;
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+        }
+
+        .contact-info a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #3c09c9;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+            }
+            nav ul {
+                margin-top: 10px;
+            }
+            .skills-grid, .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            #hero {
+                padding: 40px 20px;
+            }
+            .profile-pic {
+                width: 160px;
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <h1>Shashank HS</h1>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="hero">
+        <div class="hero-content">
+            <img src="./CD52445E-C759-46C7-BFE1-9DA732A6E412_1_105_c.jpeg" alt="Shashank HS" class="profile-pic">
+            <h2>Diploma in Computer Science Graduate</h2>
+            <p>Aspiring Developer | Passionate about Coding and Innovation</p>
+            <a href="#contact" class="cta-button">Get In Touch</a>
+        </div>
+    </section>
+    
+    <section id="about">
+        <div class="container">
+            <h2>About Me</h2>
+            <p>Hello! I'm Shashak HS a recent Diploma in Computer Science graduate with a passion for programming and technology. I enjoy building efficient applications, solving problems, and continuously learning new tools to create impactful solutions.</p>
+        </div>
+    </section>
+
+    <section id="skills">
+        <div class="container">
+            <h2>Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <i class="fab fa-python"></i>
+                    <p>Basic Python</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fab fa-java"></i>
+                    <p>Basic Java</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fas fa-database"></i>
+                    <p>Basic SQL</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fab fa-html5"></i>
+                    <p>HTML & CSS</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fas fa-brain"></i>
+                    <p>Problem-Solving</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="education">
+        <div class="container">
+            <h2>Education</h2>
+            <div class="education-item">
+                <h3>Diploma in Computer Science</h3>
+                <p>Acharya Polytechnic, 2026</p>
+                <p>Focused on programming fundamentals, data structures, and software development.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="rseume">
+        <h2> Resume </h2>
+        <div class="resume">
+            <a href="./Resume-2.pdf" target="_blank" download>Download My Resume</a>
+        </div>
+    </section>
+
+    <section id="projects">
+        <div class="container">
+            <h2>Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Simple Calculator (Python)</h3>
+                    <p>A command-line calculator for basic arithmetic operations. Demonstrates logic and user input handling.</p>
+                    <a href="#" class="project-link">View Code</a>
+                </div>
+                <div class="project-card">
+                    <h3>To-Do List App (Java)</h3>
+                    <p>A console-based task manager with add, edit, and delete functionalities. Built with OOP principles.</p>
+                    <a href="#" class="project-link">View Code</a>
+                </div>
+                <div class="project-card">
+                    <h3>Personal Portfolio (HTML/CSS)</h3>
+                    <p>This very website! A responsive portfolio showcasing my skills and projects.</p>
+                    <a href="#" class="project-link">View Live</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2>Contact Me</h2>
+            <div class="contact-info">
+                <p><i class="fas fa-envelope"></i> shashankmoni23@gmail.com</p>
+                <p><i class="fab fa-linkedin"></i> <a href="https://www.linkedin.com/in/shashank-hs-388a04306" target="_blank"> LinkedIn</a></p>
+                <p><i class="fab fa-whatsapp"></i> <a href="https://wa.me/8618222848" target="_blank"> WhatsApp</a></p>
+                <p><i class="fab fa-instagram"></i> <a href="https://www.instagram.com/_shashi_classy_" target="_blank">Instagram</a>
+                <p><i class="fas fa-phone"></i>+91 8618222848</p>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2026 Shashank HS. All rights reserved. | Built with HTML & CSS</p>
+    </footer>
+</body>
 </html>

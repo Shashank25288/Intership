@@ -1,411 +1,370 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shashank HS - Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Reset and base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fresh Cart</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+  <style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  .cat-pill:hover { transform: translateY(-2px); }
+  .product-card { transition: transform 0.2s, box-shadow 0.2s; }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+  .qty-btn { transition: background 0.15s; }
+  .toast-enter { animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .cart-badge { animation: pop 0.3s ease-out; }
+  @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  .fade-in { animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full overflow-auto" style="font-family: 'DM Sans', sans-serif;">
+  <div id="app" class="h-full w-full" style="background: #f6f3ee;"><!-- Header -->
+   <header id="header" class="sticky top-0 z-30" style="background: #2d5016;">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+     <div>
+      <h1 id="store-name" class="text-xl font-bold" style="font-family: 'Playfair Display', serif; color: #f6f3ee;">Fresh Cart</h1>
+      <p id="tagline" class="text-xs" style="color: #a8c686;">Farm-fresh, delivered fast</p>
+     </div>
+     <div class="flex items-center gap-3">
+      <div class="relative"><button id="search-toggle" class="p-2 rounded-full" style="color: #f6f3ee;" aria-label="Search"> <i data-lucide="search" style="width:20px;height:20px;"></i> </button>
+      </div><button id="cart-btn" class="relative p-2 rounded-full" style="color: #f6f3ee;" aria-label="View cart"> <i data-lucide="shopping-bag" style="width:20px;height:20px;"></i> <span id="cart-count" class="hidden absolute -top-1 -right-1 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center" style="background:#e8772e;color:#fff;"></span> </button>
+     </div>
+    </div><!-- Search bar -->
+    <div id="search-bar" class="hidden px-4 pb-3 max-w-6xl mx-auto">
+     <div class="relative"><input id="search-input" type="text" placeholder="Search groceries..." class="w-full pl-10 pr-4 py-2 rounded-xl text-sm outline-none" style="background: rgba(255,255,255,0.15); color: #f6f3ee; border: 1px solid rgba(255,255,255,0.2);"> <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2" style="width:16px;height:16px;color:#a8c686;"></i>
+     </div>
+    </div>
+   </header><!-- Main -->
+   <main class="max-w-6xl mx-auto px-4 py-5"><!-- Categories -->
+    <nav class="flex gap-2 overflow-x-auto pb-3 mb-4 no-scrollbar" id="categories" aria-label="Product categories"></nav><!-- Products Grid -->
+    <section id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" aria-label="Products"></section>
+   </main><!-- Cart Drawer -->
+   <div id="cart-overlay" class="hidden fixed inset-0 z-40 bg-black/40" style="backdrop-filter:blur(2px);"></div>
+   <aside id="cart-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md transform translate-x-full transition-transform duration-300" style="background: #f6f3ee;">
+    <div class="flex flex-col h-full">
+     <div class="flex items-center justify-between p-4 border-b" style="border-color: #d4ccb8;">
+      <h2 class="text-lg font-bold" style="font-family:'Playfair Display',serif; color:#2d5016;">Your Cart</h2><button id="close-cart" class="p-2 rounded-full" style="color:#2d5016;" aria-label="Close cart"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
+     </div>
+     <div id="cart-items" class="flex-1 overflow-auto p-4 space-y-3"></div>
+     <div id="cart-footer" class="p-4 border-t" style="border-color: #d4ccb8;">
+      <div class="flex justify-between mb-3"><span class="font-medium" style="color:#555;">Total</span> <span id="cart-total" class="font-bold text-lg" style="color:#2d5016;">$0.00</span>
+      </div><button id="checkout-btn" class="w-full py-3 rounded-xl font-semibold text-sm transition" style="background:#e8772e;color:#fff;">Checkout</button>
+     </div>
+    </div>
+   </aside><!-- Toast -->
+   <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl text-sm font-medium shadow-lg toast-enter" style="background:#2d5016;color:#f6f3ee;"></div><!-- Checkout Success Overlay -->
+   <div id="checkout-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50" style="backdrop-filter:blur(4px);">
+    <div class="bg-white rounded-2xl p-8 text-center max-w-sm mx-4 fade-in">
+     <div class="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:#e6f5d8;"><i data-lucide="check" style="width:32px;height:32px;color:#2d5016;"></i>
+     </div>
+     <h3 class="text-xl font-bold mb-2" style="font-family:'Playfair Display',serif;color:#2d5016;">Order Placed!</h3>
+     <p class="text-sm mb-5" style="color:#777;">Your fresh groceries are on the way.</p><button id="checkout-close" class="px-6 py-2 rounded-xl font-semibold text-sm" style="background:#2d5016;color:#fff;">Continue Shopping</button>
+     <p class="text-xs mt-3" style="color:#aaa;">Demo only — no real order placed</p>
+    </div>
+   </div>
+  </div>
+  <script>
+// --- Product Data ---
+const categories = ["All","Fruits","Vegetables","Dairy","Bakery","Drinks","Pantry"];
+const products = [
+  {id:"p1",name:"Organic Bananas",cat:"Fruits",price:1.29,emoji:"🍌",unit:"bunch"},
+  {id:"p2",name:"Avocados",cat:"Fruits",price:2.49,emoji:"🥑",unit:"each"},
+  {id:"p3",name:"Strawberries",cat:"Fruits",price:3.99,emoji:"🍓",unit:"pack"},
+  {id:"p4",name:"Mangoes",cat:"Fruits",price:1.89,emoji:"🥭",unit:"each"},
+  {id:"p5",name:"Baby Spinach",cat:"Vegetables",price:2.99,emoji:"🥬",unit:"bag"},
+  {id:"p6",name:"Cherry Tomatoes",cat:"Vegetables",price:3.49,emoji:"🍅",unit:"pint"},
+  {id:"p7",name:"Sweet Potatoes",cat:"Vegetables",price:1.49,emoji:"🍠",unit:"lb"},
+  {id:"p8",name:"Bell Peppers",cat:"Vegetables",price:1.99,emoji:"🫑",unit:"each"},
+  {id:"p9",name:"Whole Milk",cat:"Dairy",price:4.29,emoji:"🥛",unit:"gal"},
+  {id:"p10",name:"Greek Yogurt",cat:"Dairy",price:5.49,emoji:"🫙",unit:"tub"},
+  {id:"p11",name:"Cheddar Cheese",cat:"Dairy",price:3.99,emoji:"🧀",unit:"block"},
+  {id:"p12",name:"Sourdough Bread",cat:"Bakery",price:4.99,emoji:"🍞",unit:"loaf"},
+  {id:"p13",name:"Croissants",cat:"Bakery",price:5.49,emoji:"🥐",unit:"4-pack"},
+  {id:"p14",name:"Orange Juice",cat:"Drinks",price:3.99,emoji:"🧃",unit:"bottle"},
+  {id:"p15",name:"Oat Milk",cat:"Drinks",price:4.49,emoji:"🥛",unit:"carton"},
+  {id:"p16",name:"Olive Oil",cat:"Pantry",price:7.99,emoji:"🫒",unit:"bottle"},
+  {id:"p17",name:"Jasmine Rice",cat:"Pantry",price:5.99,emoji:"🍚",unit:"2lb bag"},
+  {id:"p18",name:"Honey",cat:"Pantry",price:6.49,emoji:"🍯",unit:"jar"},
+];
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
-        }
+// --- State ---
+let cartData = []; // from Data SDK
+let activeCat = "All";
+let searchQuery = "";
 
-        /* Animation Keyframes */
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
+// --- Config ---
+const defaultConfig = {
+  store_name: "Fresh Cart",
+  tagline: "Farm-fresh, delivered fast",
+  background_color: "#f6f3ee",
+  surface_color: "#ffffff",
+  text_color: "#2d5016",
+  primary_action_color: "#e8772e",
+  secondary_action_color: "#a8c686",
+  font_family: "DM Sans",
+  font_size: 14
+};
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
+// --- Helpers ---
+function getCartQty(productId) {
+  const item = cartData.find(c => c.product_id === productId);
+  return item ? item.quantity : 0;
+}
+function totalCartItems() { return cartData.reduce((s,c) => s + c.quantity, 0); }
+function totalCartPrice() {
+  return cartData.reduce((s,c) => {
+    const p = products.find(x => x.id === c.product_id);
+    return s + (p ? p.price * c.quantity : 0);
+  }, 0);
+}
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(5deg); }
-        }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.add('hidden'), 1800);
+}
 
-        @keyframes scale {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+// --- Render Categories ---
+function renderCategories() {
+  const cfg = window.elementSdk?.config || defaultConfig;
+  const nav = document.getElementById('categories');
+  nav.innerHTML = '';
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-pill flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap';
+    btn.textContent = cat;
+    const active = cat === activeCat;
+    btn.style.background = active ? cfg.text_color || defaultConfig.text_color : cfg.surface_color || defaultConfig.surface_color;
+    btn.style.color = active ? '#fff' : cfg.text_color || defaultConfig.text_color;
+    btn.onclick = () => { activeCat = cat; renderCategories(); renderProducts(); };
+    nav.appendChild(btn);
+  });
+}
 
-        /* Apply animations */
-        .bounce {
-            animation: bounce 2s ease-in-out;
-        }
+// --- Render Products ---
+function renderProducts() {
+  const cfg = window.elementSdk?.config || defaultConfig;
+  const grid = document.getElementById('products-grid');
+  let filtered = activeCat === "All" ? products : products.filter(p => p.cat === activeCat);
+  if (searchQuery) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-        .pulse {
-            animation: pulse 2s infinite;
-        }
+  // Selective update
+  const existingMap = new Map([...grid.children].map(el => [el.dataset.pid, el]));
+  const newIds = new Set(filtered.map(p => p.id));
 
-        .rotate:hover {
-            animation: rotate 0.5s ease-in-out;
-        }
+  // Remove old
+  existingMap.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
 
-        .scale {
-            animation: scale 1s ease-out;
-        }
-
-        /* Navigation */
-        nav {
-            position: sticky;
-            top: 0;
-            background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display:flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-        }
-
-        nav h1 {
-            color: #007bff;
-            font-size: 1.5em;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-        }
-
-        nav ul li {
-            margin-left: 20px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        nav ul li a:hover {
-            color: #007bff;
-        }
-
-        /* Hero Section */
-        #hero {
-            background: linear-gradient(135deg, #2e03ee, #3708e2);
-            color: white;
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 5px solid white;
-            margin-bottom: 20px;
-        }
-
-        #hero h2 {
-            font-size: 2em;
-            margin-bottom: 10px;
-            animation: bounce 2s ease-in-out;
-        }
-
-        #hero p {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background-color: white;
-            color: #007bff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 700;
-            transition: background-color 0.3s;
-        }
-
-        .cta-button:hover {
-            background-color: #e9ecef;
-        }
-
-        /* Sections */
-        section {
-            padding: 60px 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        section h2 {
-            text-align: center;
-            color: #007bff;
-            margin-bottom: 30px;
-            font-size: 2em;
-            animation: bounce 2s ease-in-out;
-        }
-
-        /* Skills */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            text-align: center;
-        }
-
-        .skill-item {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-            animation: pulse 2s infinite;
-        }
-
-        .skill-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .skill-item i {
-            font-size: 2em;
-            color: #007bff;
-            margin-bottom: 10px;
-        }
-
-        /* Education */
-        .education-item {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            animation: scale 1s ease-out;
-        }
-        .resume-link{
-            display:inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        /* Projects */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .project-card {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-            animation: scale 1s ease-out;
-        }
-
-        .project-card:hover {
-            transform: translateY(-5px);
-            animation: rotate 0.5s ease-in-out;
-        }
-
-        .project-link {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .project-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Contact */
-        .contact-info {
-            text-align: center;
-            animation: scale 1s ease-out;
-        }
-
-        .contact-info p {
-            margin-bottom: 10px;
-        }
-
-        .contact-info a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .contact-info a:hover {
-            text-decoration: underline;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #3c09c9;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-            }
-            nav ul {
-                margin-top: 10px;
-            }
-            .skills-grid, .projects-grid {
-                grid-template-columns: 1fr;
-            }
-            #hero {
-                padding: 40px 20px;
-            }
-            .profile-pic {
-                width: 160px;
-                height: 160px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <div class="nav-container">
-            <h1>Shashank HS</h1>
-            <ul>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#education">Education</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
+  filtered.forEach((p, i) => {
+    const qty = getCartQty(p.id);
+    let card = existingMap.get(p.id);
+    if (card) {
+      // Update existing
+      card.querySelector('.qty-display').textContent = qty;
+      card.querySelector('.qty-controls').style.display = qty > 0 ? 'flex' : 'none';
+      card.querySelector('.add-btn').style.display = qty > 0 ? 'none' : 'flex';
+      card.style.background = cfg.surface_color || defaultConfig.surface_color;
+    } else {
+      card = document.createElement('div');
+      card.className = 'product-card rounded-2xl p-3 flex flex-col fade-in';
+      card.dataset.pid = p.id;
+      card.style.background = cfg.surface_color || defaultConfig.surface_color;
+      card.innerHTML = `
+        <div class="text-4xl mb-2 text-center pt-2">${p.emoji}</div>
+        <p class="text-xs font-medium mb-0.5" style="color:${cfg.secondary_action_color || defaultConfig.secondary_action_color};">${p.cat}</p>
+        <h3 class="text-sm font-semibold mb-1 leading-tight" style="color:${cfg.text_color || defaultConfig.text_color};">${p.name}</h3>
+        <p class="text-xs mb-2" style="color:#999;">${p.unit}</p>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-bold text-sm" style="color:${cfg.text_color || defaultConfig.text_color};">$${p.price.toFixed(2)}</span>
+          <button class="add-btn w-8 h-8 rounded-full flex items-center justify-center text-white text-lg" style="background:${cfg.primary_action_color || defaultConfig.primary_action_color};display:${qty > 0 ? 'none':'flex'};" aria-label="Add ${p.name}">+</button>
+          <div class="qty-controls items-center gap-1" style="display:${qty > 0 ? 'flex':'none'};">
+            <button class="qty-btn w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold" style="background:${cfg.secondary_action_color || defaultConfig.secondary_action_color};color:#fff;" aria-label="Decrease">−</button>
+            <span class="qty-display text-sm font-bold w-6 text-center" style="color:${cfg.text_color || defaultConfig.text_color};">${qty}</span>
+            <button class="qty-btn w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold" style="background:${cfg.primary_action_color || defaultConfig.primary_action_color};color:#fff;" aria-label="Increase">+</button>
+          </div>
         </div>
-    </nav>
+      `;
+      // Events
+      card.querySelector('.add-btn').onclick = () => addToCart(p.id);
+      const [decBtn,,incBtn] = card.querySelector('.qty-controls').children;
+      decBtn.onclick = () => updateCart(p.id, -1);
+      incBtn.onclick = () => updateCart(p.id, 1);
+      grid.appendChild(card);
+    }
+  });
+}
 
-    <section id="hero">
-        <div class="hero-content">
-            <img src="./CD52445E-C759-46C7-BFE1-9DA732A6E412_1_105_c.jpeg" alt="Shashank HS" class="profile-pic">
-            <h2>Diploma in Computer Science Graduate</h2>
-            <p>Aspiring Developer | Passionate about Coding and Innovation</p>
-            <a href="#contact" class="cta-button">Get In Touch</a>
-        </div>
-    </section>
-    
-    <section id="about">
-        <div class="container">
-            <h2>About Me</h2>
-            <p>Hello! I'm Shashak HS a recent Diploma in Computer Science graduate with a passion for programming and technology. I enjoy building efficient applications, solving problems, and continuously learning new tools to create impactful solutions.</p>
-        </div>
-    </section>
+// --- Cart Actions ---
+async function addToCart(pid) {
+  if (cartData.length >= 999) { showToast("Cart limit reached"); return; }
+  const result = await window.dataSdk.create({ product_id: pid, quantity: 1 });
+  if (!result.isOk) showToast("Failed to add item");
+}
 
-    <section id="skills">
-        <div class="container">
-            <h2>Skills</h2>
-            <div class="skills-grid">
-                <div class="skill-item">
-                    <i class="fab fa-python"></i>
-                    <p>Basic Python</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fab fa-java"></i>
-                    <p>Basic Java</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fas fa-database"></i>
-                    <p>Basic SQL</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fab fa-html5"></i>
-                    <p>HTML & CSS</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fas fa-brain"></i>
-                    <p>Problem-Solving</p>
-                </div>
-            </div>
-        </div>
-    </section>
+async function updateCart(pid, delta) {
+  const item = cartData.find(c => c.product_id === pid);
+  if (!item) return;
+  const newQty = item.quantity + delta;
+  if (newQty <= 0) {
+    const result = await window.dataSdk.delete(item);
+    if (!result.isOk) showToast("Error removing item");
+  } else {
+    const result = await window.dataSdk.update({ ...item, quantity: newQty });
+    if (!result.isOk) showToast("Error updating item");
+  }
+}
 
-    <section id="education">
-        <div class="container">
-            <h2>Education</h2>
-            <div class="education-item">
-                <h3>Diploma in Computer Science</h3>
-                <p>Acharya Polytechnic, 2026</p>
-                <p>Focused on programming fundamentals, data structures, and software development.</p>
-            </div>
+// --- Cart Drawer ---
+function renderCart() {
+  const cfg = window.elementSdk?.config || defaultConfig;
+  const container = document.getElementById('cart-items');
+  if (cartData.length === 0) {
+    container.innerHTML = `<div class="text-center py-12"><div class="text-4xl mb-3">🛒</div><p class="text-sm" style="color:#999;">Your cart is empty</p></div>`;
+  } else {
+    container.innerHTML = '';
+    cartData.forEach(item => {
+      const p = products.find(x => x.id === item.product_id);
+      if (!p) return;
+      const div = document.createElement('div');
+      div.className = 'flex items-center gap-3 p-3 rounded-xl';
+      div.style.background = cfg.surface_color || defaultConfig.surface_color;
+      div.innerHTML = `
+        <span class="text-2xl">${p.emoji}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold truncate" style="color:${cfg.text_color || defaultConfig.text_color};">${p.name}</p>
+          <p class="text-xs" style="color:#999;">$${p.price.toFixed(2)} × ${item.quantity}</p>
         </div>
-    </section>
+        <span class="font-bold text-sm" style="color:${cfg.text_color || defaultConfig.text_color};">$${(p.price * item.quantity).toFixed(2)}</span>
+        <button class="p-1 rounded-full" style="color:#ccc;" aria-label="Remove ${p.name}"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button>
+      `;
+      div.querySelector('button').onclick = () => window.dataSdk.delete(item);
+      container.appendChild(div);
+    });
+    lucide.createIcons();
+  }
+  document.getElementById('cart-total').textContent = '$' + totalCartPrice().toFixed(2);
+  updateCartBadge();
+}
 
-    <section id="rseume">
-        <h2> Resume </h2>
-        <div class="resume">
-            <a href="./Resume-2.pdf" target="_blank" download>Download My Resume</a>
-        </div>
-    </section>
+function updateCartBadge() {
+  const count = totalCartItems();
+  const badge = document.getElementById('cart-count');
+  if (count > 0) {
+    badge.textContent = count;
+    badge.classList.remove('hidden');
+    badge.classList.add('cart-badge');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
 
-    <section id="projects">
-        <div class="container">
-            <h2>Projects</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <h3>Simple Calculator (Python)</h3>
-                    <p>A command-line calculator for basic arithmetic operations. Demonstrates logic and user input handling.</p>
-                    <a href="#" class="project-link">View Code</a>
-                </div>
-                <div class="project-card">
-                    <h3>To-Do List App (Java)</h3>
-                    <p>A console-based task manager with add, edit, and delete functionalities. Built with OOP principles.</p>
-                    <a href="#" class="project-link">View Code</a>
-                </div>
-                <div class="project-card">
-                    <h3>Personal Portfolio (HTML/CSS)</h3>
-                    <p>This very website! A responsive portfolio showcasing my skills and projects.</p>
-                    <a href="#" class="project-link">View Live</a>
-                </div>
-            </div>
-        </div>
-    </section>
+function openCart() {
+  renderCart();
+  document.getElementById('cart-overlay').classList.remove('hidden');
+  document.getElementById('cart-drawer').style.transform = 'translateX(0)';
+}
+function closeCart() {
+  document.getElementById('cart-overlay').classList.add('hidden');
+  document.getElementById('cart-drawer').style.transform = 'translateX(100%)';
+}
 
-    <section id="contact">
-        <div class="container">
-            <h2>Contact Me</h2>
-            <div class="contact-info">
-                <p><i class="fas fa-envelope"></i> shashankmoni23@gmail.com</p>
-                <p><i class="fab fa-linkedin"></i> <a href="https://www.linkedin.com/in/shashank-hs-388a04306" target="_blank"> LinkedIn</a></p>
-                <p><i class="fab fa-whatsapp"></i> <a href="https://wa.me/8618222848" target="_blank"> WhatsApp</a></p>
-                <p><i class="fab fa-instagram"></i> <a href="https://www.instagram.com/_shashi_classy_" target="_blank">Instagram</a>
-                <p><i class="fas fa-phone"></i>+91 8618222848</p>
-            </div>
-        </div>
-    </section>
-    <footer>
-        <p>&copy; 2026 Shashank HS. All rights reserved. | Built with HTML & CSS</p>
-    </footer>
-</body>
+// --- Search ---
+document.getElementById('search-toggle').onclick = () => {
+  const bar = document.getElementById('search-bar');
+  bar.classList.toggle('hidden');
+  if (!bar.classList.contains('hidden')) document.getElementById('search-input').focus();
+};
+document.getElementById('search-input').oninput = (e) => { searchQuery = e.target.value; renderProducts(); };
+
+// --- Cart Drawer Events ---
+document.getElementById('cart-btn').onclick = openCart;
+document.getElementById('close-cart').onclick = closeCart;
+document.getElementById('cart-overlay').onclick = closeCart;
+
+// --- Checkout ---
+document.getElementById('checkout-btn').onclick = async () => {
+  if (cartData.length === 0) return;
+  // Delete all cart items
+  for (const item of [...cartData]) { await window.dataSdk.delete(item); }
+  closeCart();
+  document.getElementById('checkout-overlay').classList.remove('hidden');
+};
+document.getElementById('checkout-close').onclick = () => {
+  document.getElementById('checkout-overlay').classList.add('hidden');
+};
+
+// --- Element SDK ---
+function applyConfig(cfg) {
+  const bg = cfg.background_color || defaultConfig.background_color;
+  const txt = cfg.text_color || defaultConfig.text_color;
+  const primary = cfg.primary_action_color || defaultConfig.primary_action_color;
+  const font = cfg.font_family || defaultConfig.font_family;
+  const baseSize = cfg.font_size || defaultConfig.font_size;
+
+  document.getElementById('app').style.background = bg;
+  document.getElementById('header').style.background = txt;
+  document.getElementById('store-name').textContent = cfg.store_name || defaultConfig.store_name;
+  document.getElementById('store-name').style.fontFamily = `'Playfair Display', ${font}, serif`;
+  document.getElementById('store-name').style.fontSize = `${baseSize * 1.5}px`;
+  document.getElementById('tagline').textContent = cfg.tagline || defaultConfig.tagline;
+  document.getElementById('tagline').style.fontFamily = `${font}, sans-serif`;
+  document.getElementById('tagline').style.fontSize = `${baseSize * 0.85}px`;
+  document.getElementById('checkout-btn').style.background = primary;
+  document.body.style.fontFamily = `${font}, sans-serif`;
+
+  renderCategories();
+  renderProducts();
+}
+
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (cfg) => applyConfig(cfg),
+  mapToCapabilities: (cfg) => ({
+    recolorables: [
+      { get: () => cfg.background_color || defaultConfig.background_color, set: v => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+      { get: () => cfg.surface_color || defaultConfig.surface_color, set: v => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+      { get: () => cfg.text_color || defaultConfig.text_color, set: v => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+      { get: () => cfg.primary_action_color || defaultConfig.primary_action_color, set: v => { cfg.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); } },
+      { get: () => cfg.secondary_action_color || defaultConfig.secondary_action_color, set: v => { cfg.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); } },
+    ],
+    borderables: [],
+    fontEditable: { get: () => cfg.font_family || defaultConfig.font_family, set: v => { cfg.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+    fontSizeable: { get: () => cfg.font_size || defaultConfig.font_size, set: v => { cfg.font_size = v; window.elementSdk.setConfig({ font_size: v }); } },
+  }),
+  mapToEditPanelValues: (cfg) => new Map([
+    ["store_name", cfg.store_name || defaultConfig.store_name],
+    ["tagline", cfg.tagline || defaultConfig.tagline],
+  ])
+});
+
+// --- Data SDK ---
+const dataHandler = {
+  onDataChanged(data) {
+    cartData = data;
+    updateCartBadge();
+    renderProducts();
+    // Update cart drawer if open
+    if (!document.getElementById('cart-overlay').classList.contains('hidden')) renderCart();
+  }
+};
+
+(async () => {
+  const result = await window.dataSdk.init(dataHandler);
+  if (!result.isOk) console.error("Data SDK init failed");
+  renderCategories();
+  renderProducts();
+  lucide.createIcons();
+})();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f26ba6327897fc7',t:'MTc3NzIxODQ2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
